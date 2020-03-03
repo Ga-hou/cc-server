@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { classToPlain } from 'class-transformer'
+import { classToPlain } from 'class-transformer';
 import { UserEntity } from './user.entity';
 import { ResponseInterface } from '../../common/interfaces/response.interface';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,7 +15,19 @@ export class UserService {
     private readonly cryptoUtil: CryptoUtil,
   ) {}
 
-  async onHandleCreate(user: CreateUserDto): Promise<ResponseInterface> {
+  async findAll(): Promise<UserEntity[]> {
+    return this.userRepository.find();
+  }
+
+  async findOneById(id: number): Promise<UserEntity> {
+    return await this.userRepository.findOne(id);
+  }
+
+  async findOneByUserName(username: string): Promise<UserEntity> {
+    return await this.userRepository.findOne({ username });
+  }
+
+  async create(user: CreateUserDto): Promise<ResponseInterface> {
     const existing = await this.findOneByUserName(user.username);
     if (existing) {
       return {
@@ -41,20 +53,9 @@ export class UserService {
     };
   }
 
-  async findOneById(id: number): Promise<UserEntity> {
-    return await this.userRepository.findOne({ id });
-  }
-
-  async findOneByUserName(username: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({
-      username,
-    });
-    return user;
-  }
-
-  async onHandleGetProfile(id: number): Promise<ResponseInterface> {
+  async profile(id: number): Promise<ResponseInterface> {
     const user = await this.userRepository.findOne(id, {
-      relations: ['userRoles']
+      relations: ['userRoles', 'userRooms'],
     });
     if (!user) {
       return {
@@ -70,7 +71,7 @@ export class UserService {
     };
   }
 
-  async findList({ pageSize = 10, pageNum = 1, username }) {
-    return await this.userRepository.findAndCount();
-  }
+  // async findList({ pageSize = 10, pageNum = 1, username }) {
+  //   return await this.userRepository.findAndCount();
+  // }
 }

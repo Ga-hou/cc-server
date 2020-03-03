@@ -9,10 +9,8 @@ import { UserRoleEntity } from '../relationalEntities/userRole/userRole.entity'
 
 @Entity('role')
 export class RolesEntity {
-  @PrimaryGeneratedColumn({
-    name: 'role_id',
-  })
-  public roleId: number;
+  @PrimaryGeneratedColumn()
+  public id: number;
 
   @Column({
     name: 'role_name',
@@ -28,7 +26,7 @@ export class RolesEntity {
   createDate: Date;
 
   @OneToMany(
-    type => UserRoleEntity,
+    () => UserRoleEntity,
     userRole => userRole.roles,
   )
   public userRoles: UserRoleEntity[]

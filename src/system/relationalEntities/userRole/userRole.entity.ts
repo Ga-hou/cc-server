@@ -20,14 +20,14 @@ export class UserRoleEntity {
   roleId!: number;
 
   @ManyToOne(
-    type => UserEntity,
+    () => UserEntity,
     user => user.userRoles,
   )
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'user_id' }) // 表明实体键的对应关系。关系可以是单向的或双向的。但是只有一方可以拥有。在关系的所有者方需要使用 @JoinColumn 装饰器。
   users!: UserEntity;
 
   @ManyToOne(
-    type => RolesEntity,
+    () => RolesEntity,
     role => role.userRoles,
   )
   @JoinColumn({ name: 'role_id' })

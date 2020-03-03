@@ -7,14 +7,22 @@ import { AuthModule } from './system/auth/auth.module';
 import { UserModule } from './system/user/user.module';
 import { DeptModule } from './system/dept/dept.module';
 import { RolesModule } from './system/roles/roles.module';
+import { AppGateway } from './app.gateway';
+import { RoomModule } from './socket/room/room.module';
+import { ChatModule } from './socket/chat/chat.module';
+import { RoomService } from './socket/room/room.service';
 import config from './config';
 @Module({
-  imports: [AuthModule, UserModule,
+  imports: [
     TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
+    AuthModule,
+    UserModule,
     DeptModule,
     RolesModule,
+    RoomModule,
+    ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {}

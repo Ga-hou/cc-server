@@ -6,11 +6,12 @@ import { UserEntity } from './user.entity';
 import { CryptoUtil } from '../../common/utils/crypto.util';
 import { UserRoleEntity } from '../relationalEntities/userRole/userRole.entity';
 import { AuthModule } from '../auth/auth.module';
+import { RoomEntity } from '../../socket/room/room.entity';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
-    TypeOrmModule.forFeature([UserEntity, UserRoleEntity]),
+    TypeOrmModule.forFeature([UserEntity, UserRoleEntity, RoomEntity]),
   ],
   providers: [UserService, CryptoUtil],
   exports: [UserService],

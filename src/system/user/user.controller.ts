@@ -9,7 +9,7 @@ export class UserController {
 
   @Post('register')
   async register(@Body() user: CreateUserDto) {
-    return this.userService.onHandleCreate(user);
+    return this.userService.create(user);
   }
   // @Post('list')
   // findList() {}
@@ -17,7 +17,7 @@ export class UserController {
   @Post('profile')
   async profile(@Request() req) {
     const user = req.user;
-    return this.userService.onHandleGetProfile(user.id);
+    return this.userService.profile(user.id);
   }
 
   // update() {}
