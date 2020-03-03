@@ -12,6 +12,7 @@ import { RoomModule } from './socket/room/room.module';
 import { ChatModule } from './socket/chat/chat.module';
 import { RoomService } from './socket/room/room.service';
 import config from './config';
+import { MessageUtil } from './common/utils/message.util';
 @Module({
   imports: [
     TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
@@ -23,6 +24,6 @@ import config from './config';
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppGateway],
+  providers: [AppService, AppGateway, MessageUtil],
 })
 export class AppModule {}

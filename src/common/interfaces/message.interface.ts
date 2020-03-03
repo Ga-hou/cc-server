@@ -3,9 +3,10 @@ export interface MessageInterface {
   timestamp: number;
   flow: 'out' | 'in';
   from: string;
+  to: string;
   payload: {
     text?: string;
     img?: string;
-    data?: any
+    data?: any;
   };
 }
