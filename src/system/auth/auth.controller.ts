@@ -5,9 +5,10 @@ import {
   HttpStatus,
   HttpException,
   UseGuards,
-  Request
+  Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { classToPlain } from 'class-transformer';
 import { UserService } from '../user/user.service';
 import { AuthUserDTO } from './dto/auth-user.dto';
 import { AuthService } from './auth.service';
@@ -19,12 +20,12 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-    private readonly cryptoUtil: CryptoUtil
+    private readonly cryptoUtil: CryptoUtil,
   ) {}
 
   @Post('login')
   async login(@Body() authUser: AuthUserDTO): Promise<ResponseInterface> {
-    const user = await this.userService.findOneByUserName(authUser.username);
+    const user = await this.userService.findOneByAccount(authUser.account);
     // 用户不存在
     if (!user) {
       throw new HttpException(
@@ -46,7 +47,7 @@ export class AuthController {
       );
     }
     const token = await this.authService.createToken({
-      username: user.username,
+      account: user.account,
       id: user.id,
     });
     return {
@@ -62,7 +63,7 @@ export class AuthController {
   async checkLogin(@Request() body) {
     return {
       statusCode: HttpStatus.OK,
-      data: {}
-    }
+      data: {},
+    };
   }
 }

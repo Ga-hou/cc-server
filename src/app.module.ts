@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import Configuration from './config/configuration';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,11 +12,13 @@ import { RolesModule } from './system/roles/roles.module';
 import { AppGateway } from './app.gateway';
 import { RoomModule } from './socket/room/room.module';
 import { ChatModule } from './socket/chat/chat.module';
-import { RoomService } from './socket/room/room.service';
 import config from './config';
 import { MessageUtil } from './common/utils/message.util';
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [Configuration],
+    }),
     TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
     AuthModule,
     UserModule,

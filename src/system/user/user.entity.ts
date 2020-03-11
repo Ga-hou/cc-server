@@ -6,9 +6,10 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { UserRoleEntity } from '../relationalEntities/userRole/userRole.entity';
 import { RoomEntity } from '../../socket/room/room.entity';
 
 @Entity('user')
@@ -16,24 +17,27 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   public id: number;
 
+  @Column({
+    name: 'role_id',
+    nullable: false,
+  })
+  public roleId: number;
+
   @Exclude({ toPlainOnly: true }) // 输出屏蔽密码
   @Column()
   public password: string;
 
   @Column({
-    name: 'user_name',
-    nullable: false
+    name: 'account',
+    nullable: false,
+  })
+  public account: string;
+
+  @Column({
+    name: 'username',
+    nullable: false,
   })
   public username: string;
-
-
-  // 角色关系
-  @OneToMany(
-    () => UserRoleEntity, // 返回我们想要与之建立关系的实体的类
-    userRoles => userRoles.users, // 表明在一对多关系中
-    { cascade: ['insert', 'remove'], nullable: false },
-  )
-  public userRoles!: UserRoleEntity[];
 
   @ManyToMany(
     () => RoomEntity,
@@ -44,6 +48,7 @@ export class UserEntity {
   )
   public userRooms!: RoomEntity[];
 
+  @Exclude({ toPlainOnly: true })
   @CreateDateColumn({
     type: 'timestamp',
     name: 'create_date',
@@ -51,6 +56,7 @@ export class UserEntity {
   })
   createDate: Date;
 
+  @Exclude({ toPlainOnly: true })
   @UpdateDateColumn({
     type: 'timestamp',
     name: 'modify_date',

@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { UserRoleEntity } from '../relationalEntities/userRole/userRole.entity'
+// import { UserRoleEntity } from '../relationalEntities/userRole/userRole.entity'
 
 @Entity('role')
 export class RolesEntity {
@@ -25,9 +25,9 @@ export class RolesEntity {
   @CreateDateColumn()
   createDate: Date;
 
-  @OneToMany(
-    () => UserRoleEntity,
-    userRole => userRole.roles,
-  )
-  public userRoles: UserRoleEntity[]
+  // @OneToMany(
+  //   () => UserRoleEntity,
+  //   userRole => userRole.roles,
+  // )
+  // public userRoles: UserRoleEntity[]
 }

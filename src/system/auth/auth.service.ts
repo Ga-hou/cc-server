@@ -10,8 +10,8 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  public async createToken(user: { username: string; id: number }) {
-    const payload = { username: user.username, id: user.id };
+  public async createToken(user: { account: string; id: number }) {
+    const payload = { account: user.account, id: user.id };
     return this.jwtService.sign(payload);
   }
 

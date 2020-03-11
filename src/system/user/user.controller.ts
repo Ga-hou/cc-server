@@ -2,6 +2,7 @@ import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
 export class UserController {
@@ -20,5 +21,18 @@ export class UserController {
     return this.userService.profile(user.id);
   }
 
-  // update() {}
+  @Post('list')
+  async userList() {
+    return await this.userService.findList();
+  }
+
+  @Post('reset')
+  async resetPassword(@Body() id: number) {
+    return await this.userService.reset(id);
+  }
+
+  @Post('update')
+  async updateUserInfo(@Body() user: UpdateUserDto) {
+    return await this.userService.update(user);
+  }
 }
