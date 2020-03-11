@@ -6,6 +6,7 @@ import productionConfig from './prod.config';
 import { UserEntity } from '../system/user/user.entity';
 import { RolesEntity } from '../system/roles/roles.entity';
 import { RoomEntity } from '../socket/room/room.entity';
+import { OverviewEntity } from '../system/data/overview.entity';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -20,7 +21,7 @@ let config = {
     username: 'root',
     password: '000000',
     database: 'ccc',
-    entities: [UserEntity, RolesEntity, RoomEntity],
+    entities: [UserEntity, RolesEntity, RoomEntity, OverviewEntity],
     migrations: ['migration/*.ts'],
     timezone: 'UTC',
     charset: 'utf8mb4',
