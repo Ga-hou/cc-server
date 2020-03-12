@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { classToPlain } from 'class-transformer';
 import { ulid } from 'ulid';
 import { UserEntity } from './user.entity';
-import { RolesEntity } from '../roles/roles.entity';
 import { ResponseInterface } from '../../common/interfaces/response.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CryptoUtil } from '../../common/utils/crypto.util';

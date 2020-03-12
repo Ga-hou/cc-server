@@ -35,4 +35,9 @@ export class UserController {
   async updateUserInfo(@Body() user: UpdateUserDto) {
     return await this.userService.update(user);
   }
+
+  @Post('group')
+  async getGroupUser(@Body() data: { groupId: string }) {
+    // return await this.userService.findListByGroupId(data.groupId);
+  }
 }
