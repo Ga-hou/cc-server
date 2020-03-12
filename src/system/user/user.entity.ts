@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { RoomEntity } from '../../socket/room/room.entity';
+import { GroupEntity } from '../group/group.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -47,6 +48,12 @@ export class UserEntity {
     },
   )
   public userRooms!: RoomEntity[];
+
+  @ManyToMany(
+    () => GroupEntity,
+    group => group.user,
+  )
+  public userGroup!: GroupEntity[];
 
   @Exclude({ toPlainOnly: true })
   @CreateDateColumn({

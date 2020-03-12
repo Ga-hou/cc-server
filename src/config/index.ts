@@ -7,6 +7,7 @@ import { UserEntity } from '../system/user/user.entity';
 import { RolesEntity } from '../system/roles/roles.entity';
 import { RoomEntity } from '../socket/room/room.entity';
 import { OverviewEntity } from '../system/data/overview.entity';
+import { GroupEntity } from '../system/group/group.entity';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -21,7 +22,7 @@ let config = {
     username: 'root',
     password: '000000',
     database: 'ccc',
-    entities: [UserEntity, RolesEntity, RoomEntity, OverviewEntity],
+    entities: [UserEntity, RolesEntity, RoomEntity, OverviewEntity, GroupEntity],
     migrations: ['migration/*.ts'],
     timezone: 'UTC',
     charset: 'utf8mb4',

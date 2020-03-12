@@ -15,6 +15,7 @@ import { ChatModule } from './socket/chat/chat.module';
 import config from './config';
 import { MessageUtil } from './common/utils/message.util';
 import { DataModule } from './system/data/data.module';
+import { GroupModule } from './system/group/group.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +29,7 @@ import { DataModule } from './system/data/data.module';
     RoomModule,
     ChatModule,
     DataModule,
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway, MessageUtil],
