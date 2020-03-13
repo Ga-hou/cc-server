@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsArray } from 'class-validator';
 
 export class UpdateUserDto {
   @IsNumber({}, { message: '不是有效的数据' })
@@ -16,4 +16,7 @@ export class UpdateUserDto {
   @IsString({ message: '不是有效的数据' })
   @IsNotEmpty({ message: '用户类型不能为空' })
   readonly roleId: 1 | 2 | 3;
+
+  @IsArray({ message: '不是有效的数据' })
+  readonly groupIdList: Array<string>;
 }

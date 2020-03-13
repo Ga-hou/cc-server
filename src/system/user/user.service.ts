@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { classToPlain } from 'class-transformer';
 import { ulid } from 'ulid';
 import { UserEntity } from './user.entity';
@@ -10,6 +10,7 @@ import { CryptoUtil } from '../../common/utils/crypto.util';
 import { EmailUtil } from '../../common/utils/email.util';
 import { RolesService } from '../roles/roles.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { GroupEntity } from '../group/group.entity';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,8 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(GroupEntity)
+    private readonly groupRepository: Repository<GroupEntity>,
     private readonly rolesService: RolesService,
     private readonly cryptoUtil: CryptoUtil,
     private readonly emailUtil: EmailUtil,
@@ -31,7 +34,9 @@ export class UserService {
   }
 
   async findList(): Promise<ResponseInterface> {
-    const [userList, count] = await this.userRepository.findAndCount();
+    const [userList, count] = await this.userRepository.findAndCount({
+      relations: ['userGroup'],
+    });
     return {
       statusCode: HttpStatus.OK,
       data: {
@@ -81,6 +86,11 @@ export class UserService {
         400,
       );
     }
+    const group = await this.groupRepository.find({
+      where: {
+        groupId: In(user.groupIdList),
+      },
+    });
 
     const password = ulid().slice(0, 6);
     try {
@@ -102,6 +112,7 @@ export class UserService {
 
     let newUser = new UserEntity();
     newUser.password = this.cryptoUtil.encryptPassword(password);
+    newUser.userGroup = group;
     newUser = { ...user, ...newUser };
     const result = await this.userRepository.save(newUser);
     return {
@@ -161,8 +172,17 @@ export class UserService {
         400,
       );
     }
+    let group = []
+    if (updateUserInfo.groupIdList.length !== 0) {
+      group = await this.groupRepository.find({
+        where: {
+          groupId: In(updateUserInfo.groupIdList),
+        },
+      });
+    }
     user.username = updateUserInfo.username;
     user.roleId = updateUserInfo.roleId;
+    user.userGroup = group;
 
     const response = await this.userRepository.save(user);
 
