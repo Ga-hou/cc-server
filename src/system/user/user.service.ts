@@ -150,7 +150,7 @@ export class UserService {
         400,
       );
     }
-    user.password = password;
+    user.password = this.cryptoUtil.encryptPassword(password);
     const response = await this.userRepository.save(user);
     return {
       statusCode: HttpStatus.OK,
@@ -172,7 +172,7 @@ export class UserService {
         400,
       );
     }
-    let group = []
+    let group = [];
     if (updateUserInfo.groupIdList.length !== 0) {
       group = await this.groupRepository.find({
         where: {
