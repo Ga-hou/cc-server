@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Req,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -39,5 +46,10 @@ export class UserController {
   @Post('group')
   async getGroupUser(@Body() data: { groupId: string }) {
     // return await this.userService.findListByGroupId(data.groupId);
+  }
+
+  @Post('room')
+  async getRoom(@Req() req) {
+    return await this.userService.findRoom(req.user.id);
   }
 }

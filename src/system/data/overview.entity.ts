@@ -45,7 +45,9 @@ export class OverviewEntity {
 
   @Column({
     name: 'trend',
-    default: Array.from({ length: 24 }).map(() => 0).join(','),
+    default: Array.from({ length: 24 })
+      .map(() => 0)
+      .join(','),
   })
   public trend: string;
 }

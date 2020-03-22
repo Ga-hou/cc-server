@@ -4,14 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   ManyToMany,
   OneToOne,
-  JoinColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { RoomEntity } from '../../socket/room/room.entity';
 import { GroupEntity } from '../group/group.entity';
+import { SocketEntity } from '../../socket/socket.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -41,19 +39,19 @@ export class UserEntity {
   public username: string;
 
   @ManyToMany(
-    () => RoomEntity,
-    room => room.roomUsers,
-    {
-      cascade: true,
-    },
-  )
-  public userRooms!: RoomEntity[];
-
-  @ManyToMany(
     () => GroupEntity,
     group => group.user,
   )
   public userGroup!: GroupEntity[];
+
+  @OneToOne(
+    () => SocketEntity,
+    socket => socket.user,
+    {
+      cascade: true,
+    },
+  )
+  socket: SocketEntity;
 
   @Exclude({ toPlainOnly: true })
   @CreateDateColumn({

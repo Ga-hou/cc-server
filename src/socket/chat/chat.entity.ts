@@ -1,8 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class ChatEntity {
@@ -10,9 +6,7 @@ export class ChatEntity {
   id: number;
 
   @Column('text', {
-    nullable: false
+    nullable: false,
   })
   message: string;
-
-
 }

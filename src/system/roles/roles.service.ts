@@ -8,8 +8,7 @@ export class RolesService {
   constructor(
     @InjectRepository(RolesEntity)
     private readonly roleRepository: Repository<RolesEntity>,
-  )
-  {}
+  ) {}
 
   async findAll(): Promise<ResponseInterface> {
     const roles = await this.roleRepository.find();

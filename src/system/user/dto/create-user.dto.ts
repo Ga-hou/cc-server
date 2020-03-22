@@ -14,5 +14,5 @@ export class CreateUserDto {
   readonly roleId: 1 | 2 | 3;
 
   @IsArray({ message: '不是有效的数据' })
-  readonly groupIdList: Array<string>
+  readonly groupIdList: Array<string>;
 }

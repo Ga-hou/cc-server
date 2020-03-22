@@ -47,9 +47,7 @@ export class UserService {
   }
 
   async profile(id: number): Promise<ResponseInterface> {
-    const user = await this.userRepository.findOne(id, {
-      relations: ['userRooms'],
-    });
+    const user = await this.userRepository.findOne(id);
     if (!user) {
       return {
         statusCode: HttpStatus.NO_CONTENT,
@@ -192,6 +190,15 @@ export class UserService {
         msg: '修改成功',
         response: classToPlain(response),
       },
+    };
+  }
+  async findRoom(id: number): Promise<ResponseInterface> {
+    // const { userRooms } = await this.userRepository.findOne(id, {
+    //   relations: ['userRooms'],
+    // });
+    return {
+      statusCode: HttpStatus.OK,
+      data: {},
     };
   }
 }

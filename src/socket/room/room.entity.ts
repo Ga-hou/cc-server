@@ -6,8 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
 import { UserEntity } from '../../system/user/user.entity';
+import { SocketEntity } from '../socket.entity';
 
 @Entity('room')
 export class RoomEntity {
@@ -16,17 +18,18 @@ export class RoomEntity {
 
   @Column({
     name: 'room_id',
+    type: 'varchar',
   })
-  roomId: number;
+  roomId: string;
 
   @ManyToMany(
-    () => UserEntity,
-    user => user.userRooms,
+    () => SocketEntity,
+    socket => socket.rooms,
   )
   @JoinTable({
-    name: 'user_room',
+    name: 'socket_room',
   })
-  roomUsers!: UserEntity;
+  roomUsers!: SocketEntity[];
 
   @Column({
     name: 'room_name',

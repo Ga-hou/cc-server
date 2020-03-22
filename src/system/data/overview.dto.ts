@@ -1,7 +1,7 @@
 import { IsDate, IsNotEmpty } from 'class-validator';
 
-export class OverviewDto  {
+export class OverviewDto {
   @IsDate()
   @IsNotEmpty()
-  readonly date: Date
+  readonly date: Date;
 }
