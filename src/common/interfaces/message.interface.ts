@@ -4,9 +4,11 @@ export interface MessageInterface {
   flow: 'out' | 'in';
   from: string;
   to: string;
-  payload: {
+  payload?: {
+    type?: number;
     text?: string;
     img?: string;
     data?: any;
   };
+  message: any;
 }

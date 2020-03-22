@@ -16,7 +16,7 @@ export class EmailUtil {
       from: 'jiahaoliao@vip.qq.com',
       to: email,
       subject: '客服系统密码',
-      html: `您的登录密码为：${password}`
+      html: `您的登录密码为：${password}`,
     };
 
     return await transporter.sendMail(sendMailOptions);

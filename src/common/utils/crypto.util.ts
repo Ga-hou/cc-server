@@ -1,5 +1,5 @@
-import { createHash } from 'crypto'
-import { Injectable } from '@nestjs/common'
+import { createHash } from 'crypto';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CryptoUtil {
@@ -10,7 +10,7 @@ export class CryptoUtil {
   encryptPassword(password: string): string {
     return createHash('sha256')
       .update(password)
-      .digest('hex')
+      .digest('hex');
   }
 
   /**
@@ -19,7 +19,7 @@ export class CryptoUtil {
    * @param encryptedPassword 库中加密后的密码
    */
   checkPassword(password: string, encryptedPassword): boolean {
-    const currentPass = this.encryptPassword(password)
-    return currentPass === encryptedPassword
+    const currentPass = this.encryptPassword(password);
+    return currentPass === encryptedPassword;
   }
 }
