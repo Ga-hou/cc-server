@@ -1,19 +1,18 @@
 import {
   Entity,
-  ManyToMany,
-  JoinTable,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
-import { UserEntity } from '../../system/user/user.entity';
-import { SocketEntity } from '../socket.entity';
+import { SocketRoomEntity } from './relations/SocketRoom.entity';
 
 @Entity('room')
 export class RoomEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({
+    name: 'id',
+  })
   public id: number;
 
   @Column({
@@ -22,27 +21,17 @@ export class RoomEntity {
   })
   roomId: string;
 
-  @ManyToMany(
-    () => SocketEntity,
-    socket => socket.rooms,
-  )
-  @JoinTable({
-    name: 'socket_room',
-  })
-  roomUsers!: SocketEntity[];
-
   @Column({
     name: 'room_name',
     nullable: false,
   })
   roomName: string;
 
-  // @Column({
-  //   name: 'room_type',
-  //   enum: ['private', 'publish'],
-  //   default: 'publish',
-  // })
-  // roomType: string;
+  @ManyToOne(
+    () => SocketRoomEntity,
+    socketRooms => socketRooms.rooms,
+  )
+  roomSocket!: SocketRoomEntity[];
 
   @CreateDateColumn({
     type: 'timestamp',

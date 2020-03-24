@@ -41,18 +41,27 @@ export class AgentGateway
   @SubscribeMessage('login')
   async handleLogin(client: Socket, data) {
     this.logger.log('Agent login', client.id);
-    const result = await this.socketService.login(data.payload.id, client.id);
-    if (!result) {
+    let result;
+    try {
+      result = await this.socketService.login(data.payload.id, client);
+      if (!result) {
+        this.logger.error('agent login fail')
+        client.emit('login', 'login fail');
+      } else {
+        this.logger.log('agent login success')
+        client.emit('login');
+      }
+    } catch (e) {
+      this.logger.error('agent login fail')
       client.emit('login', 'login fail');
-    } else {
-      client.emit('login');
     }
   }
 
   @SubscribeMessage('rooms')
   async handleGetRooms(client: Socket) {
-    console.log(client.id)
-    client.emit('rooms', await this.socketService.findRooms(client.id));
+    this.logger.log('ger user rooms', client.id);
+    const rooms = await this.socketService.findRooms(client.id)
+    client.emit('rooms', rooms);
   }
 
   @SubscribeMessage('message')

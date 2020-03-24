@@ -2,31 +2,33 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from '../system/user/user.entity';
-import { RoomEntity } from './room/room.entity';
+import { SocketRoomEntity } from './room/relations/SocketRoom.entity';
 
 @Entity('socket')
 export class SocketEntity {
-  @PrimaryGeneratedColumn({
+  @PrimaryGeneratedColumn()
+  public id: number;
+
+  @Column({
     name: 'user_id',
   })
   public userId: number;
-
-  @Column({
-    name: 'status',
-    nullable: true,
-  })
-  public status: string;
 
   @Column({
     name: 'client_id',
     nullable: true,
   })
   public clientId: string;
+
+  @Column({
+    name: 'online',
+  })
+  public online: boolean;
 
   @OneToOne(
     () => UserEntity,
@@ -37,12 +39,9 @@ export class SocketEntity {
   })
   user: UserEntity;
 
-  @ManyToMany(
-    () => RoomEntity,
-    room => room.roomUsers,
-    {
-      cascade: true,
-    },
+  @OneToMany(
+    () => SocketRoomEntity,
+    socketRoom => socketRoom.socket,
   )
-  public rooms!: RoomEntity[];
+  socketRooms: SocketRoomEntity[];
 }

@@ -16,6 +16,7 @@ import { SocketEntity } from './socket.entity';
 import { MessageUtil } from '../common/utils/message.util';
 import { SocketUtil } from './socket.util';
 import { Queue } from '../common/DataStructures/Queue/Queue';
+import { SocketRoomEntity } from './room/relations/SocketRoom.entity';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Queue } from '../common/DataStructures/Queue/Queue';
       RolesEntity,
       RoomEntity,
       SocketEntity,
+      SocketRoomEntity,
     ]),
   ],
   providers: [

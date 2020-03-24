@@ -14,6 +14,7 @@ import { RoomService } from './room/room.service';
 import { MessageUtil } from '../common/utils/message.util';
 import { SocketUtil } from './socket.util';
 import { Queue } from '../common/DataStructures/Queue/Queue';
+import { SocketService } from './socket.service';
 @WebSocketGateway(8082, { namespace: 'user' })
 export class UserGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -22,6 +23,7 @@ export class UserGateway
   constructor(
     private readonly roomService: RoomService,
     private readonly messageUtil: MessageUtil,
+    private readonly socketService: SocketService,
     private readonly socketUtil: SocketUtil,
     private readonly queue: Queue<Socket>,
   ) {}
@@ -39,28 +41,29 @@ export class UserGateway
   @SubscribeMessage('create')
   async handleJoin(client: Socket, data) {
     this.logger.log('Client create room', client.id);
-    const room = client.adapter.rooms[data];
-    // google existing room
-    if (!room || !room.length) {
-      client.join(client.id);
-    }
-    client.emit('create', await this.roomService.create(client.id));
   }
 
   // event
   @SubscribeMessage('login')
   async handleLogin(client: Socket) {
-    this.logger.log('Client login', client.id);
-    client.emit('login', 'login success');
+    this.logger.log('Client login and create room', client.id);
+    const room = client.adapter.rooms[client.id];
+    // google existing room
+    if (!room || !room.length) {
+      client.join(client.id);
+    }
+    const result = await this.roomService.create(client.id);
+    console.log(result);
+    client.emit('login', this.messageUtil.createSystemMessage(result));
   }
   @SubscribeMessage('message')
-  handleMessage(client: Socket, data) {
+  async handleMessage(client: Socket) {
     this.logger.log('Client message', client.id);
-    console.log(data);
     const sockets = this.socketUtil.getRoomUser(client);
     const socketsCount = Object.keys(sockets).length;
     if (socketsCount === 1) {
-      this.handleBeforeArtificial(client);
+      this.logger.log('开始分配客服', client.id);
+      await this.socketService.handleBeforeArtificial(client);
     }
   }
 
@@ -82,15 +85,5 @@ export class UserGateway
         }),
       );
     }
-  }
-
-  // 进房人工服务前
-  handleBeforeArtificial(client: Socket) {
-    client.emit(
-      'message',
-      this.messageUtil.createSystemMessage({
-        text: '转人工中，请等待',
-      }),
-    );
   }
 }

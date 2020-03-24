@@ -8,6 +8,7 @@ import { RoomEntity } from '../socket/room/room.entity';
 import { OverviewEntity } from '../system/data/overview.entity';
 import { GroupEntity } from '../system/group/group.entity';
 import { SocketEntity } from '../socket/socket.entity';
+import { SocketRoomEntity } from '../socket/room/relations/SocketRoom.entity';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -29,6 +30,7 @@ let config = {
       OverviewEntity,
       GroupEntity,
       SocketEntity,
+      SocketRoomEntity,
     ],
     migrations: ['migration/*.ts'],
     timezone: 'UTC',
