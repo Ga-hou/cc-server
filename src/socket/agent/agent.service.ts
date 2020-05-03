@@ -97,11 +97,41 @@ export class AgentService {
   async leave(server: Server, client: SocketInterface) {
     this.logger.log('离开房间')
     this.socketService.removeFeed(server, client);
-
+    // this.clients.enqueue(client);
     /**
      * 把客服从房间的服务客服里面删除
      */
     try {
+      // const socket = await this.socketRepository.findOne({
+      //   clientId: client.id
+      // })
+      const socketRoom = await this.socketRoomRepository.findOne({
+        clientId: client.id
+      }, {
+        relations: ['rooms']
+      });
+      const roomSocketId = socketRoom.id;
+      const room = await this.roomRepository.findOne({
+        roomId: socketRoom.roomId
+      }, {
+        relations: ['roomSocket']
+      })
+      // 暂时处理
+      socketRoom.status = 'after';
+      await this.socketRoomRepository.save(socketRoom);
+      this.clients.enqueue(client);
+      // await this.roomRepository.save(room);
+
+
+      // console.log('socketRoom', socketRoom)
+      // const room = await this.roomRepository.findOne({
+      //   roomId: socketRoom.roomId
+      // }, {
+      //   relations: ['roomSocket']
+      // })
+      // room.roomSocket = null;
+      // this.roomRepository.save(room);
+      // await this.socketRoomRepository.remove(socketRoom);
       // this.clients.enqueue(client);
       // const socket = await this.socketRepository.findOne({
       //   clientId: client.id,

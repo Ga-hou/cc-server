@@ -33,9 +33,6 @@ export class SocketRoomEntity {
     () => SocketEntity,
     socket => socket.socketRooms
   )
-  @JoinColumn({
-    name: 'client_id',
-  })
   socket: SocketEntity;
 
   @OneToMany(

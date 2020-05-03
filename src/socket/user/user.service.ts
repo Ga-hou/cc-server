@@ -66,6 +66,7 @@ export class UserService {
       }
       if (socketEntity.online) {
         this.logger.log('找到空闲客服');
+        console.log('clientId', agentClient.id)
         roomEntity = await this.roomRepository.findOne({
           roomId: userClient.id,
         });
@@ -158,7 +159,6 @@ export class UserService {
    */
   async handleOneUser(client: Socket) {
     const status = await this.querySocketRoomStatus(client);
-    console.log(status)
     /**
      * 等待客服进入
      */
@@ -193,7 +193,6 @@ export class UserService {
   }
   async querySocketRoomStatus(client: Socket) {
     const socketRoom = await this.findSocketRoomById(client);
-    console.log(111, socketRoom);
     if (socketRoom && socketRoom.status === 'before') {
       return 'before'
     }

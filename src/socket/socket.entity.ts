@@ -45,5 +45,8 @@ export class SocketEntity {
       cascade: true,
     },
   )
+  @JoinColumn({
+    name: 'user_id',
+  })
   socketRooms: SocketRoomEntity[];
 }
