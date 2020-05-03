@@ -133,10 +133,14 @@ export class UserService {
     const roomUserCount = this.socketUtil.getRoomUserCount(client);
     console.log('房间内人数', roomUserCount)
     if (roomUserCount > 1) return
-    else if (this.agentService.clients.isEmpty()) this.handleEmptyUser(client)
-    else if (roomUserCount === 1) this.handleOneUser(client)
     else {
-      this.logger.error('其他情况')
+      /**
+       * 房间内只有一个人时
+       */
+      if (roomUserCount === 1) this.handleOneUser(client)
+      else {
+        this.logger.error('其他情况')
+      }
     }
   }
 
@@ -153,10 +157,48 @@ export class UserService {
    * 处理房间内只有一个用户时
    */
   async handleOneUser(client: Socket) {
-    this.logger.log('开始分配客服', client.id);
-    await this.handleBeforeArtificial(client);
+    const status = await this.querySocketRoomStatus(client);
+    console.log(status)
+    /**
+     * 等待客服进入
+     */
+    if (status === 'before') {
+      await this.handleWaiting(client);
+    }
+    /**
+     * 队列为空
+     */
+    else if(this.agentService.clients.isEmpty()) {
+      this.handleEmptyUser(client)
+    }
+    else {
+      this.logger.log('开始分配客服', client.id);
+      await this.handleBeforeArtificial(client);
+    }
+  }
+  /**
+   * 
+   * @param client 
+   */
+  async handleWaiting(client: Socket) {
+    client.emit('message', this.messageUtil.createSystemMessage({
+      text: '等待客服进入。。。。'
+    }))
   }
 
+  async findSocketRoomById(client: Socket) {
+    return await this.socketRoomRepository.findOne({
+      roomId: client.id
+    })
+  }
+  async querySocketRoomStatus(client: Socket) {
+    const socketRoom = await this.findSocketRoomById(client);
+    console.log(111, socketRoom);
+    if (socketRoom && socketRoom.status === 'before') {
+      return 'before'
+    }
+    return null;
+  }
   /**
    * 用户进入创建房间
    * 通过clientId创建
@@ -164,7 +206,7 @@ export class UserService {
   async handleCreateRoom(client: SocketInterface) {
     const name = client.id
     const room = client.nsp.adapter.rooms[name]
-    console.log('收到创建房间请求:' + name, room)
+    this.logger.log('收到创建房间请求:' + name + JSON.stringify(room));
     try {
       await this.roomService.create(client);
       await this.socketService.join(client, name)

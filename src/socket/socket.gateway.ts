@@ -138,6 +138,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect, 
   ) {
     this.logger.log('收到自定义消息', client.id);
     console.log(data)
+    console.log()
     if (data.payload.type === 1) this.userService.handleWelcome(client)
     else if (data.role === 'user') this.userService.handleMessage(client, data)
   }
@@ -169,7 +170,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect, 
    * @param data 
    */
   @SubscribeMessage('create')
-  async handleCreateRoom(client: SocketInterface, data: MessageDto) {
+  async handleCreateRoom(client: SocketInterface, data) {
     console.log(data)
     /**
      * 目前只能用户创建房间

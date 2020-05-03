@@ -9,10 +9,14 @@ export class MessageUtil {
       sid: Date.now().toString(),
       id: ulid(),
       timestamp: Date.now(),
+      roomType: '',
       flow: 'in',
       from: 'system',
+      username: 'admin',
+      role: 'admin',
       payload: message,
-      type: 'chat'
+      type: 'chat',
+      prefix: '',
     };
   }
 }
