@@ -1,32 +1,16 @@
-import {
-  IsIn,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, ValidateNested, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { BaseMessageDto } from './baseMessage';
 
-export class RequestDto {
-  @IsString()
-  @IsNotEmpty({
-    message: 'id不能为空',
-  })
-  id: string;
+class MessagePayloadDto {
+  @IsNotEmpty({ message: '消息内容不能为空' })
+  text: string;
+}
 
-  @IsNotEmpty({
-    message: '时间戳不能为空',
+export class MessageDto extends BaseMessageDto {
+  @ValidateNested({
+    each: true,
   })
-  timestamp: number;
-
-  @IsIn(['in', 'out'])
-  @IsNotEmpty({
-    message: 'flow不能为空',
-  })
-  flow: 'in' | 'out';
-
-  @IsString({
-    message: 'from格式不正确',
-  })
-  @IsNotEmpty({
-    message: 'from不能为空',
-  })
-  from: string;
+  @Type(() => MessagePayloadDto)
+  payload: MessagePayloadDto;
 }

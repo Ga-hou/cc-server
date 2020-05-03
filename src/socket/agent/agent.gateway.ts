@@ -11,9 +11,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
-import { UserService } from '../system/user/user.service';
-import { SocketService } from './socket.service';
-import { LoginDto } from './dto/agent/login.dto';
+import { SocketService } from '../socket.service';
+import { LoginDto } from '../dto/agent/login.dto';
+import { AgentService } from './agent.service';
+import { MessageUtil } from '../../common/utils/message.util';
 
 @UsePipes(
   new ValidationPipe({
@@ -28,50 +29,52 @@ export class AgentGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('AgentGateway');
   constructor(
-    private readonly userService: UserService,
     private readonly socketService: SocketService,
+    private readonly agentService: AgentService,
+    private readonly messageUtil: MessageUtil,
   ) {}
 
   handleConnection(client: Socket) {
-    this.logger.log('Client connected: ', client.id);
-    this.logger.log(
-      Object.keys(this.server.clients().sockets).length,
-      'current online user count',
+    this.logger.error('客服连接', client.id);
+    this.logger.error(
+      '当前客服在线人数: ' + Object.keys(this.server.clients().sockets).length,
     );
   }
   async handleDisconnect(client: Socket) {
-    this.logger.log('Client disconnected: ', client.id);
-    await this.socketService.logout(client.id);
+    this.logger.error('客服断开连接', client.id);
+    if (await this.agentService.logout(client.id)) {
+      this.logger.error('Client logout success', client.id);
+    }
   }
   @SubscribeMessage('login')
   async handleLogin(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: LoginDto,
   ): Promise<WsResponse> {
-    this.logger.log('Agent login', client.id);
+    this.logger.error('客服登录', client.id);
     return {
       event: 'login',
-      data: await this.socketService.login(data.payload.id, client),
+      data: this.messageUtil.createSystemMessage(
+        await this.agentService.findOneSocket(data.payload.id, client),
+      ),
     };
   }
 
   @SubscribeMessage('rooms')
   async handleGetRooms(@ConnectedSocket() client: Socket): Promise<WsResponse> {
-    this.logger.log('ger user rooms', client.id);
-    const rooms = await this.socketService.findRooms(client.id);
+    this.logger.error('获取客服所在房间', client.id);
     return {
       event: 'rooms',
-      data: rooms,
+      data: this.messageUtil.createSystemMessage(
+        await this.socketService.findRoomsByClientId(client.id),
+      ),
     };
   }
 
   @SubscribeMessage('message')
   handleMessage(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    this.logger.log('Client message', data);
-  }
-
-  @SubscribeMessage('test')
-  test() {
-    this.logger.error('test');
+    this.logger.error('客服发送消息', data.payload.text);
+    console.log(this.server.of('/user'))
+    console.log(Object.keys(this.server))
   }
 }

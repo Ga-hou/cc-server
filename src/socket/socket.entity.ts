@@ -20,8 +20,7 @@ export class SocketEntity {
   public userId: number;
 
   @Column({
-    name: 'client_id',
-    nullable: true,
+    name: 'client_id'
   })
   public clientId: string;
 
@@ -42,6 +41,9 @@ export class SocketEntity {
   @OneToMany(
     () => SocketRoomEntity,
     socketRoom => socketRoom.socket,
+    {
+      cascade: true,
+    },
   )
   socketRooms: SocketRoomEntity[];
 }

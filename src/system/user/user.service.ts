@@ -11,6 +11,7 @@ import { EmailUtil } from '../../common/utils/email.util';
 import { RolesService } from '../roles/roles.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GroupEntity } from '../group/group.entity';
+import { RandomStringUtil } from '../../common/utils/random.string.util';
 
 @Injectable()
 export class UserService {
@@ -23,6 +24,7 @@ export class UserService {
     private readonly rolesService: RolesService,
     private readonly cryptoUtil: CryptoUtil,
     private readonly emailUtil: EmailUtil,
+    private readonly randomStringUtil: RandomStringUtil,
   ) {}
 
   async findOneById(id: number): Promise<UserEntity> {
@@ -90,7 +92,7 @@ export class UserService {
       },
     });
 
-    const password = ulid().slice(0, 6);
+    const password = this.randomStringUtil.get(6);
     try {
       await this.emailUtil.send(user.account, password);
       send = true;

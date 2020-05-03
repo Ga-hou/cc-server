@@ -6,15 +6,17 @@ import {
   HttpException,
   UseGuards,
   Request,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { classToPlain } from 'class-transformer';
 import { UserService } from '../user/user.service';
 import { AuthUserDTO } from './dto/auth-user.dto';
 import { AuthService } from './auth.service';
 import { ResponseInterface } from '../../common/interfaces/response.interface';
 import { CryptoUtil } from '../../common/utils/crypto.util';
 
+@UsePipes(new ValidationPipe())
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -60,7 +62,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('check')
-  async checkLogin(@Request() body) {
+  async checkLogin() {
     return {
       statusCode: HttpStatus.OK,
       data: {},

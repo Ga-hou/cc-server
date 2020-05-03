@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../system/user/user.entity';
-import { AgentGateway } from './agent.gateway';
-import { UserGateway } from './user.gateway';
-import { UserService } from '../system/user/user.service';
+import { AgentGateway } from './agent/agent.gateway';
+import { UserGateway } from './user/user.gateway';
+import { UserService } from './user/user.service';
 import { RoomService } from './room/room.service';
 import { GroupEntity } from '../system/group/group.entity';
 import { RolesEntity } from '../system/roles/roles.entity';
@@ -17,6 +17,8 @@ import { MessageUtil } from '../common/utils/message.util';
 import { SocketUtil } from './socket.util';
 import { Queue } from '../common/DataStructures/Queue/Queue';
 import { SocketRoomEntity } from './room/relations/SocketRoom.entity';
+import { AgentService } from './agent/agent.service';
+import { SocketGateway } from './socket.gateway';
 
 @Module({
   imports: [
@@ -30,17 +32,19 @@ import { SocketRoomEntity } from './room/relations/SocketRoom.entity';
     ]),
   ],
   providers: [
-    AgentGateway,
-    UserGateway,
     UserService,
     RoomService,
     SocketService,
     RolesService,
+    AgentService,
     CryptoUtil,
     EmailUtil,
     MessageUtil,
     SocketUtil,
     Queue,
+    // AgentGateway,
+    // UserGateway,
+    SocketGateway,
   ],
 })
 export class SocketModule {}

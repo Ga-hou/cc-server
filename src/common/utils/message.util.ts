@@ -6,11 +6,13 @@ import { MessageInterface } from '../interfaces/message.interface';
 export class MessageUtil {
   public createSystemMessage(message) {
     return {
+      sid: Date.now().toString(),
       id: ulid(),
       timestamp: Date.now(),
       flow: 'in',
       from: 'system',
-      payload: message
+      payload: message,
+      type: 'chat'
     };
   }
 }

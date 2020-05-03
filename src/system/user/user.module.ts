@@ -11,6 +11,7 @@ import { EmailUtil } from '../../common/utils/email.util';
 import { RolesEntity } from '../roles/roles.entity';
 import { GroupEntity } from '../group/group.entity';
 import { SocketEntity } from '../../socket/socket.entity';
+import { RandomStringUtil } from '../../common/utils/random.string.util';
 
 @Module({
   imports: [
@@ -23,7 +24,13 @@ import { SocketEntity } from '../../socket/socket.entity';
       SocketEntity,
     ]),
   ],
-  providers: [UserService, RolesService, CryptoUtil, EmailUtil],
+  providers: [
+    UserService,
+    RolesService,
+    CryptoUtil,
+    EmailUtil,
+    RandomStringUtil,
+  ],
   exports: [UserService],
   controllers: [UserController],
 })

@@ -9,7 +9,6 @@ import { AuthModule } from './system/auth/auth.module';
 import { UserModule } from './system/user/user.module';
 import { DeptModule } from './system/dept/dept.module';
 import { RolesModule } from './system/roles/roles.module';
-import { AppGateway } from './app.gateway';
 import { RoomModule } from './socket/room/room.module';
 import { ChatModule } from './socket/chat/chat.module';
 import { MessageUtil } from './common/utils/message.util';
@@ -36,6 +35,6 @@ import { ConversationModule } from './system/conversation/conversation.module';
     ConversationModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppGateway, MessageUtil],
+  providers: [AppService, MessageUtil],
 })
 export class AppModule {}

@@ -1,89 +1,112 @@
 import {
   SubscribeMessage,
   WebSocketGateway,
-  OnGatewayInit,
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  WsException,
+  WsResponse,
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
-import { RoomService } from './room/room.service';
-import { MessageUtil } from '../common/utils/message.util';
-import { SocketUtil } from './socket.util';
-import { Queue } from '../common/DataStructures/Queue/Queue';
-import { SocketService } from './socket.service';
+import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
+import { RoomService } from '../room/room.service';
+import { MessageUtil } from '../../common/utils/message.util';
+import { SocketUtil } from '../socket.util';
+import { SocketService } from '../socket.service';
+import { UserService } from './user.service';
+import { SystemMessageDto } from '../dto/system.message.dto';
+import { AgentService } from '../agent/agent.service';
+
+@UsePipes(
+  new ValidationPipe({
+    exceptionFactory: errors => {
+      console.error(errors);
+      return new WsException(errors);
+    },
+  }),
+)
 @WebSocketGateway(8082, { namespace: 'user' })
-export class UserGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('UserGateway');
   constructor(
+    private readonly userService: UserService,
     private readonly roomService: RoomService,
     private readonly messageUtil: MessageUtil,
-    private readonly socketService: SocketService,
     private readonly socketUtil: SocketUtil,
-    private readonly queue: Queue<Socket>,
+    private readonly agentService: AgentService
   ) {}
-  afterInit(server: Server) {
-    this.logger.log('Socket Server Init');
-  }
   handleConnection(client: Socket) {
-    this.logger.log('Client connected: ', client.id);
+    this.logger.log('用户连接', client.id);
   }
   async handleDisconnect(client: Socket) {
-    this.logger.log('Client disconnected: ', client.id);
-    await this.socketService.leave(client);
+    this.logger.log('用户断开连接', client.id);
+    await this.userService.logout(client.id);
   }
   // WebRTC event
   @SubscribeMessage('create')
-  async handleJoin(client: Socket, data) {
-    this.logger.log('Client create room', client.id);
+  async handleJoin(client: Socket) {
+    this.logger.log('创建用户房间', client.id);
   }
 
   // event
   @SubscribeMessage('login')
-  async handleLogin(client: Socket) {
-    this.logger.log('Client login and create room', client.id);
-    const room = client.adapter.rooms[client.id];
-    // google existing room
-    if (!room || !room.length) {
-      client.join(client.id);
-    }
-    const result = await this.roomService.create(client.id);
-    console.log(result);
-    client.emit('login', this.messageUtil.createSystemMessage(result));
+  async handleLogin(client: Socket): Promise<WsResponse> {
+    this.logger.log('用户登录', client.id);
+    const result = await this.roomService.create(client);
+    return {
+      event: 'login',
+      data: this.messageUtil.createSystemMessage(result),
+    };
   }
+
   @SubscribeMessage('message')
   async handleMessage(client: Socket) {
-    this.logger.log('Client message', client.id);
+    this.logger.log('收到用户消息', client.id);
+    const clients = this.agentService.clients;
     const sockets = this.socketUtil.getRoomUser(client);
     const socketsCount = Object.keys(sockets).length;
-    if (socketsCount === 1) {
+    if (clients.isEmpty()) {
+      return {
+        event: 'message',
+        data: this.messageUtil.createSystemMessage({
+          text: '当前没有客服在线'
+        })
+      }
+    }
+    else if (socketsCount === 1) {
       this.logger.log('开始分配客服', client.id);
-      await this.socketService.handleBeforeArtificial(client);
+      await this.userService.handleBeforeArtificial(client);
+      return {
+        event: 'message',
+        data: this.messageUtil.createSystemMessage({
+          text: '分配客服中'
+        })
+      }
     }
   }
 
   // 业务自定义消息
   @SubscribeMessage('system')
-  sendWelcome(
-    client: Socket,
-    payload: {
-      type: number;
-      data: any;
-    },
+  async sendWelcome(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: SystemMessageDto,
   ) {
-    this.logger.log('receive system message', client.id);
-    if (payload.type === 1) {
-      client.emit(
-        'message',
-        this.messageUtil.createSystemMessage({
+    this.logger.log('receive system message type: ' + data.payload.type, client.id);
+    console.log(this.server.of('/agent'))
+    if (data.payload.type === 1) {
+      return {
+        event: 'message',
+        data: this.messageUtil.createSystemMessage({
           text: '欢迎。。。',
         }),
-      );
+      };
     }
+    return {
+      event: 'system',
+      data: null,
+    };
   }
 }

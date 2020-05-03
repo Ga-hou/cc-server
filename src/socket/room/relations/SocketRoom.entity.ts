@@ -31,10 +31,7 @@ export class SocketRoomEntity {
 
   @ManyToOne(
     () => SocketEntity,
-    socket => socket.socketRooms,
-    {
-      cascade: true,
-    },
+    socket => socket.socketRooms
   )
   @JoinColumn({
     name: 'client_id',

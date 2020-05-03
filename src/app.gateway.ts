@@ -8,7 +8,7 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { HttpStatus, Logger, OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { RoomService } from './socket/room/room.service';
 import { UserService } from './system/user/user.service';

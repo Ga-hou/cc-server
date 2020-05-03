@@ -76,7 +76,10 @@ export class LinkedList<T> {
         return currentNode;
       }
 
-      if (props.value !== undefined && this.compare.equal(currentNode.value, props.value)) {
+      if (
+        props.value !== undefined &&
+        this.compare.equal(currentNode.value, props.value)
+      ) {
         return currentNode;
       }
 
@@ -146,7 +149,9 @@ export class LinkedList<T> {
   }
 
   toString(callback: Function): string {
-    return this.toArray().map(node => node.toString(callback)).toString();
+    return this.toArray()
+      .map(node => node.toString(callback))
+      .toString();
   }
 
   reverse(): LinkedList<T> {
