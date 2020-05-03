@@ -35,7 +35,7 @@ export class UserGateway
   }
   async handleDisconnect(client: Socket) {
     this.logger.log('Client disconnected: ', client.id);
-    // await this.roomService.leave(client.id);
+    await this.socketService.leave(client);
   }
   // WebRTC event
   @SubscribeMessage('create')
