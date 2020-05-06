@@ -91,6 +91,7 @@ export class UserService {
         groupId: In(user.groupIdList),
       },
     });
+    console.log('group', group)
 
     const password = this.randomStringUtil.get(6);
     try {
