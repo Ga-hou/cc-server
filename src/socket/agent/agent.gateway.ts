@@ -74,7 +74,7 @@ export class AgentGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('message')
   handleMessage(@ConnectedSocket() client: Socket, @MessageBody() data) {
     this.logger.error('客服发送消息', data.payload.text);
-    console.log(this.server.of('/user'))
-    console.log(Object.keys(this.server))
+    console.log(this.server.of('/user'));
+    console.log(Object.keys(this.server));
   }
 }

@@ -8,7 +8,6 @@ import { SocketServiceResponseDto } from './dto/socket.service.response.dto';
 import { SocketInterface } from './socket.interface';
 import { SocketEntity } from './socket.entity';
 
-
 @Injectable()
 export class SocketService {
   public clients: Queue<Socket>;
@@ -17,7 +16,7 @@ export class SocketService {
     @InjectRepository(SocketRoomEntity)
     private readonly socketRoomRepository: Repository<SocketRoomEntity>,
     @InjectRepository(SocketEntity)
-    private readonly socketRepository: Repository<SocketEntity>
+    private readonly socketRepository: Repository<SocketEntity>,
   ) {
     this.clients = new Queue<Socket>();
   }
@@ -56,17 +55,14 @@ export class SocketService {
    * 加入房间处理
    */
   async join(client: SocketInterface, name: string) {
-    client.join(name)
-    client.room = name
-    return [
-      null,
-      this.describeRoom(client, name)
-    ]
+    client.join(name);
+    client.room = name;
+    return [null, this.describeRoom(client, name)];
   }
-  
+
   // /**
   //  * 退出房间
-  //  * @param client 
+  //  * @param client
   //  */
   // async leave(server: Server, client: SocketInterface) {
   //   this.logger.log('退出房间', client.id)
@@ -84,33 +80,35 @@ export class SocketService {
   // }
 
   /**
-   * 
-   * @param client 
-   * @param name 
+   *
+   * @param client
+   * @param name
    */
 
   describeRoom(client: SocketInterface, name: string) {
     const adapter = client.nsp.adapter;
     const clients = adapter.rooms[name] ? adapter.rooms[name].sockets : {};
     const result = {
-        clients: {}
+      clients: {},
     };
-    Object.keys(clients).forEach(function (id) {
-        result.clients[id] = (adapter.nsp.connected[id] as SocketInterface).resources;
+    Object.keys(clients).forEach(function(id) {
+      result.clients[id] = (adapter.nsp.connected[
+        id
+      ] as SocketInterface).resources;
     });
     return result;
   }
 
   removeFeed(server: Server, client: SocketInterface, type?: string) {
     if (client.room) {
-        server.sockets.in(client.room).emit('remove', {
-            id: client.id,
-            type: type
-        });
-        if (!type) {
-            client.leave(client.room);
-            client.room = undefined;
-        }
+      server.sockets.in(client.room).emit('remove', {
+        id: client.id,
+        type: type,
+      });
+      if (!type) {
+        client.leave(client.room);
+        client.room = undefined;
+      }
     }
-}
+  }
 }

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ulid } from 'ulid'
+import { ulid } from 'ulid';
 import { SocketEntity } from '../socket.entity';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../../system/user/user.entity';
@@ -32,7 +32,7 @@ export class UserService {
     private readonly agentService: AgentService,
     private readonly roomService: RoomService,
     private readonly socketUtil: SocketUtil,
-    private readonly socketService: SocketService
+    private readonly socketService: SocketService,
   ) {}
   async logout(clientId: string) {
     try {
@@ -42,8 +42,8 @@ export class UserService {
         }),
         await this.socketRoomRepository.delete({
           roomId: clientId,
-        })
-      ])
+        }),
+      ]);
     } catch (e) {
       console.log(e);
     }
@@ -56,7 +56,7 @@ export class UserService {
     let socketEntity: SocketEntity;
     while (!clients.isEmpty()) {
       agentClient = clients.dequeue();
-      console.log('agentClient', agentClient.id)
+      console.log('agentClient', agentClient.id);
       try {
         socketEntity = await this.socketRepository.findOne({
           clientId: agentClient.id,
@@ -66,7 +66,7 @@ export class UserService {
       }
       if (socketEntity.online) {
         this.logger.log('找到空闲客服');
-        console.log('clientId', agentClient.id)
+        console.log('clientId', agentClient.id);
         roomEntity = await this.roomRepository.findOne({
           roomId: userClient.id,
         });
@@ -92,7 +92,7 @@ export class UserService {
 
   /**
    * 查找当前空闲客服
-   * @param client 
+   * @param client
    */
   async handleBeforeArtificial(client) {
     const [agentClient, room] = await this.findOnlineAgent(client);
@@ -108,22 +108,25 @@ export class UserService {
   /**
    * 处理用户登录请客
    * 在room表增加一个房间
-   * 
-   * @param client 
+   *
+   * @param client
    */
   async handleLogin(client: Socket) {
-    this.logger.log('用户登录', client.id)
+    this.logger.log('用户登录', client.id);
     const result = await this.roomService.create(client);
-    client.emit('login', this.messageUtil.createSystemMessage(result))
+    client.emit('login', this.messageUtil.createSystemMessage(result));
   }
   /**
    * 用户消息欢迎语
    */
   async handleWelcome(client: Socket) {
-    this.logger.log('欢迎用户', client.id)
-    client.emit('message', this.messageUtil.createSystemMessage({
-      text: '欢迎。。。。啊啊啊'
-    }))
+    this.logger.log('欢迎用户', client.id);
+    client.emit(
+      'message',
+      this.messageUtil.createSystemMessage({
+        text: '欢迎。。。。啊啊啊',
+      }),
+    );
   }
 
   /**
@@ -132,27 +135,30 @@ export class UserService {
   async handleMessage(client: Socket, data: MessageDto) {
     this.logger.log('收到用户消息', client.id);
     const roomUserCount = this.socketUtil.getRoomUserCount(client);
-    console.log('房间内人数', roomUserCount)
-    if (roomUserCount > 1) return
+    console.log('房间内人数', roomUserCount);
+    if (roomUserCount > 1) return;
     else {
       /**
        * 房间内只有一个人时
        */
-      if (roomUserCount === 1) this.handleOneUser(client)
+      if (roomUserCount === 1) this.handleOneUser(client);
       else {
-        this.logger.error('其他情况')
+        this.logger.error('其他情况');
       }
     }
   }
 
   /**
    * 处理没有客服在情况
-   * @param client 
+   * @param client
    */
   async handleEmptyUser(client: Socket) {
-    client.emit('message', this.messageUtil.createSystemMessage({
-      text: '当前没有客服在线啊啊啊'
-    }))
+    client.emit(
+      'message',
+      this.messageUtil.createSystemMessage({
+        text: '当前没有客服在线啊啊啊',
+      }),
+    );
   }
   /**
    * 处理房间内只有一个用户时
@@ -164,37 +170,38 @@ export class UserService {
      */
     if (status === 'before') {
       await this.handleWaiting(client);
-    }
+    } else if (this.agentService.clients.isEmpty()) {
     /**
      * 队列为空
      */
-    else if(this.agentService.clients.isEmpty()) {
-      this.handleEmptyUser(client)
-    }
-    else {
+      this.handleEmptyUser(client);
+    } else {
       this.logger.log('开始分配客服', client.id);
       await this.handleBeforeArtificial(client);
     }
   }
   /**
-   * 
-   * @param client 
+   *
+   * @param client
    */
   async handleWaiting(client: Socket) {
-    client.emit('message', this.messageUtil.createSystemMessage({
-      text: '等待客服进入。。。。'
-    }))
+    client.emit(
+      'message',
+      this.messageUtil.createSystemMessage({
+        text: '等待客服进入。。。。',
+      }),
+    );
   }
 
   async findSocketRoomById(client: Socket) {
     return await this.socketRoomRepository.findOne({
-      roomId: client.id
-    })
+      roomId: client.id,
+    });
   }
   async querySocketRoomStatus(client: Socket) {
     const socketRoom = await this.findSocketRoomById(client);
     if (socketRoom && socketRoom.status === 'before') {
-      return 'before'
+      return 'before';
     }
     return null;
   }
@@ -203,18 +210,21 @@ export class UserService {
    * 通过clientId创建
    */
   async handleCreateRoom(client: SocketInterface) {
-    const name = client.id
-    const room = client.nsp.adapter.rooms[name]
+    const name = client.id;
+    const room = client.nsp.adapter.rooms[name];
     this.logger.log('收到创建房间请求:' + name + JSON.stringify(room));
     try {
       await this.roomService.create(client);
-      await this.socketService.join(client, name)
-      client.emit('create', this.messageUtil.createSystemMessage({
-        text: name
-      }))
-      this.logger.log('创建房间成功')
+      await this.socketService.join(client, name);
+      client.emit(
+        'create',
+        this.messageUtil.createSystemMessage({
+          text: name,
+        }),
+      );
+      this.logger.log('创建房间成功');
     } catch (error) {
-      console.error('创建房间失败', error)
+      console.error('创建房间失败', error);
     }
   }
 
@@ -222,10 +232,12 @@ export class UserService {
     const adapter = client.nsp.adapter;
     const clients = adapter.rooms[name] ? adapter.rooms[name].sockets : {};
     const result = {
-        clients: {}
+      clients: {},
     };
-    Object.keys(clients).forEach(function (id) {
-        result.clients[id] = (adapter.nsp.connected[id] as SocketInterface).resources;
+    Object.keys(clients).forEach(function(id) {
+      result.clients[id] = (adapter.nsp.connected[
+        id
+      ] as SocketInterface).resources;
     });
     return result;
   }

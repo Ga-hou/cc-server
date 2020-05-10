@@ -32,7 +32,7 @@ export class RoomService {
    * 首先判断谷歌服务是否存在这个房间，否则加入
    * 其次在room表查找，存在则抛错
    * 不然就创建
-   * @param client 
+   * @param client
    */
   async create(client: Socket): Promise<SocketServiceResponseDto> {
     const rooms = client.adapter.rooms[client.id];

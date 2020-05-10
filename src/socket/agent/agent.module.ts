@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgentService } from './agent.service';
-import { AgentGateway } from './agent.gateway';
 import { MessageUtil } from '../../common/utils/message.util';
 import { UserEntity } from '../../system/user/user.entity';
 import { GroupEntity } from '../../system/group/group.entity';
@@ -23,12 +22,6 @@ import { SocketService } from '../socket.service';
       SocketRoomEntity,
     ]),
   ],
-  providers: [
-    AgentService,
-    AgentGateway,
-    MessageUtil,
-    UserService,
-    SocketService,
-  ],
+  providers: [AgentService, MessageUtil, UserService, SocketService],
 })
 export class AgentModule {}

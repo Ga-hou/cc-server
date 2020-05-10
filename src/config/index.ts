@@ -38,7 +38,7 @@ let config = {
     multipleStatements: true,
     dropSchema: false,
     synchronize: true,
-    logging: false,
+    logging: true,
   },
 
   isDev: true,

@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.use(compression());
-  app.use(helmet())
+  app.use(helmet());
   // app.use(csurf())
   app.use(
     rateLimit({

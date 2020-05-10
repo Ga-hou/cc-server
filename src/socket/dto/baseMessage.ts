@@ -28,5 +28,5 @@ export class BaseMessageDto {
 
   @IsString({ message: 'role格式不正确' })
   @IsNotEmpty({ message: 'role不能为空' })
-  role: 'agent' | 'user'
+  role: 'agent' | 'user';
 }

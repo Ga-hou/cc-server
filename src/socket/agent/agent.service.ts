@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Socket, Server } from 'socket.io';
 import { Repository, Like, In } from 'typeorm';
-import { ResponseDto } from '../dto/response.dto';
 import { SocketEntity } from '../socket.entity';
 import { Queue } from '../../common/DataStructures/Queue/Queue';
 import { UserEntity } from '../../system/user/user.entity';
@@ -30,7 +29,7 @@ export class AgentService {
     private readonly socketRoomRepository: Repository<SocketRoomEntity>,
     private readonly messageUtil: MessageUtil,
     private readonly roomService: RoomService,
-    private readonly socketService: SocketService
+    private readonly socketService: SocketService,
   ) {
     this.clients = new Queue<Socket>();
   }
@@ -95,7 +94,7 @@ export class AgentService {
    * 退出房间
    */
   async leave(server: Server, client: SocketInterface) {
-    this.logger.log('离开房间')
+    this.logger.log('离开房间');
     this.socketService.removeFeed(server, client);
     // this.clients.enqueue(client);
     /**
@@ -105,23 +104,28 @@ export class AgentService {
       // const socket = await this.socketRepository.findOne({
       //   clientId: client.id
       // })
-      const socketRoom = await this.socketRoomRepository.findOne({
-        clientId: client.id
-      }, {
-        relations: ['rooms']
-      });
+      const socketRoom = await this.socketRoomRepository.findOne(
+        {
+          clientId: client.id,
+        },
+        {
+          relations: ['rooms'],
+        },
+      );
       const roomSocketId = socketRoom.id;
-      const room = await this.roomRepository.findOne({
-        roomId: socketRoom.roomId
-      }, {
-        relations: ['roomSocket']
-      })
+      const room = await this.roomRepository.findOne(
+        {
+          roomId: socketRoom.roomId,
+        },
+        {
+          relations: ['roomSocket'],
+        },
+      );
       // 暂时处理
       socketRoom.status = 'after';
       await this.socketRoomRepository.save(socketRoom);
       this.clients.enqueue(client);
       // await this.roomRepository.save(room);
-
 
       // console.log('socketRoom', socketRoom)
       // const room = await this.roomRepository.findOne({
@@ -143,37 +147,40 @@ export class AgentService {
       // await this.socketRoomRepository.remove(socket.socketRooms)
       // await this.socketRepository.save(socket);
     } catch (error) {
-      console.log('坐席房间删除失败', error)
+      console.log('坐席房间删除失败', error);
     }
   }
 
   /**
    * 处理坐席登录
    * 主要是在socket表操作
-   * @param client 
-   * @param data 
+   * @param client
+   * @param data
    */
   async handleLogin(client: Socket, data: LoginDto) {
     let result = null;
     try {
-      result = await this.findOneSocket(data.payload.id, client)
-    } catch(e) {
-      this.logger.error('坐席登录失败')
-      client.emit('login', this.messageUtil.createSystemMessage({
-        text: '坐席登录失败'
-      }))
+      result = await this.findOneSocket(data.payload.id, client);
+    } catch (e) {
+      this.logger.error('坐席登录失败');
+      client.emit(
+        'login',
+        this.messageUtil.createSystemMessage({
+          text: '坐席登录失败',
+        }),
+      );
     }
-    this.logger.log('坐席登录成功')
-    client.emit('login', this.messageUtil.createSystemMessage(result))
+    this.logger.log('坐席登录成功');
+    client.emit('login', this.messageUtil.createSystemMessage(result));
   }
 
   /**
    * 查找用户所在房间列表
-   * @param client 
+   * @param client
    */
   async handleRooms(client: Socket) {
-    const result = await this.socketService.findRoomsByClientId(client.id)
-    client.emit('rooms', this.messageUtil.createSystemMessage(result))
+    const result = await this.socketService.findRoomsByClientId(client.id);
+    client.emit('rooms', this.messageUtil.createSystemMessage(result));
   }
 
   /**
@@ -181,25 +188,24 @@ export class AgentService {
    */
 
   async handleJoinRoom(client: SocketInterface, name: string) {
-    client.join(name)
-    client.room = name
-    return [
-      null,
-      this.describeRoom(client, name)
-    ]
+    client.join(name);
+    client.room = name;
+    return [null, this.describeRoom(client, name)];
   }
 
   describeRoom(client: SocketInterface, name: string) {
     const adapter = client.nsp.adapter;
     const clients = adapter.rooms[name] ? adapter.rooms[name].sockets : {};
     const result = {
-        clients: {}
+      clients: {},
     };
-    Object.keys(clients).forEach(function (id) {
-        result.clients[id] = (adapter.nsp.connected[id] as SocketInterface).resources;
+    Object.keys(clients).forEach(function(id) {
+      result.clients[id] = (adapter.nsp.connected[
+        id
+      ] as SocketInterface).resources;
     });
-    console.log(clients)
-    console.log('room result', result)
+    console.log(clients);
+    console.log('room result', result);
     return result;
   }
 
@@ -208,6 +214,6 @@ export class AgentService {
       return cb;
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    return function() {}
+    return function() {};
   }
 }

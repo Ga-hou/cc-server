@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../system/user/user.entity';
-import { AgentGateway } from './agent/agent.gateway';
-import { UserGateway } from './user/user.gateway';
 import { UserService } from './user/user.service';
 import { RoomService } from './room/room.service';
 import { GroupEntity } from '../system/group/group.entity';
@@ -42,8 +40,6 @@ import { SocketGateway } from './socket.gateway';
     MessageUtil,
     SocketUtil,
     Queue,
-    // AgentGateway,
-    // UserGateway,
     SocketGateway,
   ],
 })

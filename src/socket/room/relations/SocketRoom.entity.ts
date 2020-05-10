@@ -31,7 +31,7 @@ export class SocketRoomEntity {
 
   @ManyToOne(
     () => SocketEntity,
-    socket => socket.socketRooms
+    socket => socket.socketRooms,
   )
   socket: SocketEntity;
 

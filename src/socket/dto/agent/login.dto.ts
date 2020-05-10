@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsNumber, ValidateNested, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  ValidateNested,
+  IsString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { BaseMessageDto } from '../baseMessage';
 

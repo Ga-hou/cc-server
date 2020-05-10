@@ -20,7 +20,7 @@ export class SocketEntity {
   public userId: number;
 
   @Column({
-    name: 'client_id'
+    name: 'client_id',
   })
   public clientId: string;
 

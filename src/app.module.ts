@@ -10,7 +10,6 @@ import { UserModule } from './system/user/user.module';
 import { DeptModule } from './system/dept/dept.module';
 import { RolesModule } from './system/roles/roles.module';
 import { RoomModule } from './socket/room/room.module';
-import { ChatModule } from './socket/chat/chat.module';
 import { MessageUtil } from './common/utils/message.util';
 import { DataModule } from './system/data/data.module';
 import { GroupModule } from './system/group/group.module';
@@ -28,7 +27,6 @@ import { ConversationModule } from './system/conversation/conversation.module';
     DeptModule,
     RolesModule,
     RoomModule,
-    ChatModule,
     DataModule,
     GroupModule,
     SocketModule,

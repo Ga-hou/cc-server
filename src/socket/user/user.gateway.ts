@@ -36,7 +36,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly roomService: RoomService,
     private readonly messageUtil: MessageUtil,
     private readonly socketUtil: SocketUtil,
-    private readonly agentService: AgentService
+    private readonly agentService: AgentService,
   ) {}
   handleConnection(client: Socket) {
     this.logger.log('用户连接', client.id);
@@ -72,19 +72,18 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return {
         event: 'message',
         data: this.messageUtil.createSystemMessage({
-          text: '当前没有客服在线'
-        })
-      }
-    }
-    else if (socketsCount === 1) {
+          text: '当前没有客服在线',
+        }),
+      };
+    } else if (socketsCount === 1) {
       this.logger.log('开始分配客服', client.id);
       await this.userService.handleBeforeArtificial(client);
       return {
         event: 'message',
         data: this.messageUtil.createSystemMessage({
-          text: '分配客服中'
-        })
-      }
+          text: '分配客服中',
+        }),
+      };
     }
   }
 
@@ -94,8 +93,11 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: SystemMessageDto,
   ) {
-    this.logger.log('receive system message type: ' + data.payload.type, client.id);
-    console.log(this.server.of('/agent'))
+    this.logger.log(
+      'receive system message type: ' + data.payload.type,
+      client.id,
+    );
+    console.log(this.server.of('/agent'));
     if (data.payload.type === 1) {
       return {
         event: 'message',

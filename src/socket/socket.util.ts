@@ -4,7 +4,7 @@ import { Socket, Room, Server } from 'socket.io';
 export class SocketUtil {
   /**
    * 通过clientId获取房间
-   * @param client 
+   * @param client
    */
   getRoomUser(client: Socket): Room {
     return client.adapter.rooms[client.id];
@@ -14,6 +14,6 @@ export class SocketUtil {
    * 获取房间内人数
    */
   getRoomUserCount(client: Socket): number {
-    return Object.keys(this.getRoomUser(client).sockets).length
+    return Object.keys(this.getRoomUser(client).sockets).length;
   }
 }
